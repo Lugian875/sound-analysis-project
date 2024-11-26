@@ -19,8 +19,8 @@ root.columnconfigure(7,weight=1)
 
 # Widgets
 title = tk.Label(
-    frame, text = 'Python Interactive Data Modeling Project', font = ('Arial 16 bold'), bg= 'white', fg= 'black'
-).grid(column=1,row=0,sticky="NESW")
+    root, text = 'Python Interactive Data Modeling Project', font = ('Arial 16 bold'), bg= 'white', fg= 'black'
+).grid(row=0,column=1,sticky='N')
 
 # audio_loader = tk.Button(
 #     frame, text = "Help me please :(", font=('Arial 12'), bg='white',fg='black'
