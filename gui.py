@@ -17,7 +17,6 @@ grid = tk.Frame(frame)
 grid.grid(column=0,row=7,sticky='NESW',columnspan=2)
 root.rowconfigure(7,weight=1)
 root.columnconfigure(7,weight=1)
-
 # Place code for the audio loader here. Or it just goes to a differnt .py file?
 # That latter is probably better for cleaner code and all that.
 
