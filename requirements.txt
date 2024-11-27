@@ -1,0 +1,4 @@
+# required modules
+tkinter
+mathplotlib
+numpy

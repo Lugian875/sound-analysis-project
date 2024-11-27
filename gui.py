@@ -18,7 +18,7 @@ root.rowconfigure(7,weight=1)
 root.columnconfigure(7,weight=1)
 
 # Place code for the audio loader here. Or it just goes to a differnt .py file?
-# That one is probably better for cleaner code and all that.
+# That latter is probably better for cleaner code and all that.
 def load_audio():
     print("Audio Loader triggered. Now it just has to be coded.")
     test_button = tk.Button(
