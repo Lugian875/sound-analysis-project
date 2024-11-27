@@ -1,4 +1,8 @@
 # required modules
-tkinter
-mathplotlib
-numpy
+matplotlib==3.8.3
+numpy==1.26.4
+scipy==1.13.1 # uncertain
+
+# Check versions of all locally installed modules w/ "pip freeze"
+# Add more modules here if used
+# idk if "FFmpeg" is needed in reqiurements.txt
