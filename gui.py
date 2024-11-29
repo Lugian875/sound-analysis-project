@@ -28,7 +28,7 @@ title = tk.Label(
 
 # Load Audio Button
 load_audio_btn = tk.Button(
-    root, text = "Load Audio", font=('Arial 12'), fg='black',command=lambda:[load_audio_btn.grid_forget(),ah.load_audio(root)]
+    root, text = "Load Audio", font=('Arial 12'), fg='black',command=lambda:[load_audio_btn.grid_forget(),ah.load_audio()]
 )
 load_audio_btn.grid(column=1,row=0,pady='80',sticky='N')
 # Cleaner button?
