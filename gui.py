@@ -17,7 +17,6 @@ grid = tk.Frame(frame)
 grid.grid(column=0,row=7,sticky='NESW',columnspan=2)
 root.rowconfigure(7,weight=1)
 root.columnconfigure(7,weight=1)
-
 # Place code for the audio loader here. Or it just goes to a differnt .py file?
 # That latter is probably better for cleaner code and all that.
 
@@ -29,7 +28,7 @@ title = tk.Label(
 
 # Load Audio Button
 load_audio_btn = tk.Button(
-    root, text = "Load Audio", font=('Arial 12'), fg='black',command=lambda:[load_audio_btn.grid_forget(),ah.load_audio(root)]
+    root, text = "Load Audio", font=('Arial 12'), fg='black',command=lambda:[load_audio_btn.grid_forget(),ah.load_audio()]
 )
 load_audio_btn.grid(column=1,row=0,pady='80',sticky='N')
 # Cleaner button?
