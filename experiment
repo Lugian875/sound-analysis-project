@@ -1,0 +1,77 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+import subprocess
+import os
+
+# Full path to ffmpeg.exe
+FFMPEG_PATH = r"C:\Users\Isaac\Downloads\ffmpeg-2024-11-28-git-bc991ca048-essentials_build\ffmpeg-2024-11-28-git-bc991ca048-essentials_build\bin\ffmpeg.exe"
+
+# Audio processing function
+def process_audio_file():
+    # Select audio file
+    audio_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3 *.aac")])
+    if not audio_path:
+        messagebox.showwarning("No File Selected", "Please try again.")
+        return
+
+    try:
+        # Convert MP3/AAC to WAV if necessary
+        if not audio_path.endswith(".wav"):
+            converted_path = os.path.splitext(audio_path)[0] + "_converted.wav"
+            ffmpeg_command = [
+                FFMPEG_PATH,
+                "-i", audio_path,  # Input file
+                converted_path    # Output file
+            ]
+            subprocess.run(ffmpeg_command, check=True)
+            audio_path = converted_path
+            messagebox.showinfo("Conversion Done", f"File converted to WAV: {converted_path}")
+
+        # Validate audio file
+        if not os.path.exists(audio_path) or os.path.getsize(audio_path) == 0:
+            raise ValueError("Selected audio file is invalid or empty.")
+        messagebox.showinfo("Validation Success", "Audio file passed validation.")
+
+        # Remove metadata
+        cleaned_path = os.path.splitext(audio_path)[0] + "_no_metadata.wav"
+        ffmpeg_command = [
+            FFMPEG_PATH,
+            "-i", audio_path,  # Input file
+            "-map_metadata", "-1",  # Remove metadata
+            cleaned_path      # Output file
+        ]
+        subprocess.run(ffmpeg_command, check=True)
+        messagebox.showinfo("Metadata Removed", f"Metadata-free file saved: {cleaned_path}")
+
+        # Convert to mono channel
+        mono_path = os.path.splitext(cleaned_path)[0] + "_mono_channel.wav"
+        ffmpeg_command = [
+            FFMPEG_PATH,
+            "-i", cleaned_path,  # Input file
+            "-ac", "1",          # Convert to mono
+            mono_path            # Output file
+        ]
+        subprocess.run(ffmpeg_command, check=True)
+        messagebox.showinfo("Processing Complete", f"Mono file saved: {mono_path}")
+
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Error", f"FFmpeg processing failed: {e}")
+    except Exception as e:
+        messagebox.showerror("Error", f"Audio processing failed: {e}")
+
+# GUI 
+def start_gui():
+    # Initialize root window
+    root = tk.Tk()
+    root.title("Acoustic Data Processing Tool")
+
+    # Add a button to process the audio file
+    process_button = tk.Button(root, text="Process Audio File", command=process_audio_file)
+    process_button.pack(pady=20)
+
+    # Start the main event loop
+    root.mainloop()
+
+# Start the GUI
+if __name__ == "__main__":
+    start_gui()
