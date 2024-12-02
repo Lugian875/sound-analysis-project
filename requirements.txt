@@ -1,11 +1,11 @@
 # required modules
 
-librosa=0.10.2.post1
+librosa==0.10.2.post1
 matplotlib==3.8.3
 numpy==1.26.4
 pydub==0.25.1
 scipy==1.13.1 # uncertain if this is needed yet
-soundfile=0.12.1
+soundfile==0.12.1
 tkinter==8.6.14
 
 # Check versions of all locally installed modules w/ "pip freeze"
