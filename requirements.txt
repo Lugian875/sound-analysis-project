@@ -10,4 +10,3 @@ tkinter==8.6.14
 
 # Check versions of all locally installed modules w/ "pip freeze"
 # Add more modules here if used
-# idk if "FFmpeg" is needed in reqiurements.txt
