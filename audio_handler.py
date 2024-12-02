@@ -23,6 +23,8 @@ def load_audio():
             converted_path= audio_path.rsplit('.', 1)[0] + "_converted.wav"
             sound = AudioSegment.from_mp3(audio_path)
             sound.export(converted_path,format='wav')
+            messagebox.showinfo ("File converted from .mp3, to .wav", f"Saved at {converted_path}" )
+            audio_path = converted_path
 
         # Data Validation
         audio_data, sample_rate = librosa.load(audio_path, sr=None)
@@ -31,19 +33,16 @@ def load_audio():
         messagebox.showinfo("Validation Success", "Audio file passed validation.")
 
         # Remove metadata
-        cleaned_path = audio_path.rsplit('.', 1)[0] + "_no_metadata.wav"
-        sf.write(cleaned_path, audio_data, sample_rate)
-        messagebox.showinfo("Metadata Removed", f"Metadata-free file saved: {cleaned_path}")
+        # cleaned_path = audio_path.rsplit('.', 1)[0] + "_no_metadata.wav"
+        sf.write(audio_path, audio_data, sample_rate)
+        messagebox.showinfo("Metadata Removed", f"Metadata-free file saved")
 
         # Converts dual-channel to single-channel audio
-        mono_path = cleaned_path.rsplit('.', 1)[0] + "_mono_channel.wav"
-        audio_data, sample_rate = librosa.load(cleaned_path, sr=None, mono=True)
-        sf.write(mono_path, audio_data, sample_rate)
-        messagebox.showinfo("Processing Complete", f"Mono file saved: {mono_path}")
+        # mono_path = cleaned_path.rsplit('.', 1)[0] + "_mono_channel.wav"
+        audio_data, sample_rate = librosa.load(audio_path, sr=None, mono=True)
+        sf.write(audio_path, audio_data, sample_rate)
+        messagebox.showinfo("Processing Complete", f"Mono file saved")
 
     # Handles all exceptions
     except Exception as e:
          messagebox.showerror("Error", f"Audio processing failed: {e}")
-
-# Add code to delete all other audio files except for the starting file and
-# The final result ("..._converted_no_metadata_mono_channel.wav")
