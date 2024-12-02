@@ -11,7 +11,7 @@ def load_audio():
     # print("Audio Loader triggered")
 
     # Asks user for audio file
-    audio_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3 *.aac")])
+    audio_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
     if not audio_path:
         # If this is triggered, the "Load Audio" button should return
         messagebox.showwarning("No File Selected", "Please choose an audio file.")
@@ -21,18 +21,8 @@ def load_audio():
         # Convert the file type to ".wav" if necessary
         if not audio_path.endswith(".wav"):
             converted_path= audio_path.rsplit('.', 1)[0] + "_converted.wav"
-            # need to find a way to convert aac files. As of now this only works with .aac
             sound = AudioSegment.from_mp3(audio_path)
             sound.export(converted_path,format='wav')
-
-
-        # Old code (remove, doesn't work')
-        # if not audio_path.endswith(".wav"):
-        #     converted_path = audio_path.rsplit('.', 1)[0] + "_converted.wav"
-        #     audio_data, sample_rate = librosa.load(audio_path, sr=None, mono=False)
-        #     sf.write(converted_path, audio_data, sample_rate)
-        #     audio_path = converted_path
-        #     messagebox.showinfo("Conversion Done", f"File converted to WAV: {audio_path}")
 
         # Data Validation
         audio_data, sample_rate = librosa.load(audio_path, sr=None)
