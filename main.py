@@ -19,6 +19,7 @@ class AudioAnalysisApp:
         self.analyze_button.pack(pady=10)
 
         # Create a canvas for scrolling
+        # In hindsight, making this just show all of the graphs dynamically without the need of the scrollwheel would prob be better than this 
         self.canvas = tk.Canvas(root)
         self.canvas.pack(side="left", fill="both", expand=True)
 
