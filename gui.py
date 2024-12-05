@@ -12,17 +12,6 @@ root.title('SPIDAM Project')
 root.geometry('1280x720+300+300')
 root.resizable(True,True)
 
-#Configures Window Frame and Grid for Widget Organization
-frame = tk.Frame(root)
-root.rowconfigure(0,weight=1)
-root.columnconfigure(0,weight=1)
-frame.grid(column=0,row=0,sticky='NESW')
-grid = tk.Frame(frame)
-grid.grid(column=0,row=7,sticky='NESW',columnspan=2)
-root.rowconfigure(7,weight=1)
-root.columnconfigure(7,weight=1)
-
-
 # Functions
 audio_path = "" #Saves path for audio file used in project for future use
 
@@ -50,30 +39,34 @@ def audio_analysis():
     generate_report(results,update_status)
 
 
-# Widgets
+# GUI Layout
 
 # Title Label (centered at top)
 title = tk.Label(
     root, text='Python Interactive Data Modeling Project', font='Arial 32 bold', fg='black')
-title.grid(column=1, row=0, sticky='N')
+title.pack(side=tk.TOP, pady=10)
+
+# Frame to store the buttons
+button_frame = tk.Frame(root)
+button_frame.pack(pady=10)
 
 # Load Audio Button
 audio_load_btn = tk.Button(
-    root, text="Load Audio", font='Arial 12', fg='black',command=lambda:[audio_handler()]
+    button_frame, text="Load Audio", font='Arial 12', fg='black',command=lambda:[audio_handler()]
 )
-audio_load_btn.grid(column=1,row=0, pady=80, sticky='N')
+audio_load_btn.pack(side=tk.LEFT,padx=10)
 
 # Audio Analysis Button
 audio_analysis_btn = tk.Button(
-    root, text="Analyze Audio", font='Arial 12',fg='black', state="disabled", command=lambda:[audio_analysis()]
+    button_frame, text="Analyze Audio", font='Arial 12',fg='black', state="disabled", command=lambda:[audio_analysis()]
 )
-audio_analysis_btn.grid(column=1,row=0,pady=130, sticky='N')
+audio_analysis_btn.pack(side=tk.LEFT,padx=10)
 
 #Text Box that displays status
 status_box = scrolledtext.ScrolledText (
     root,font='Arial 10',width=50,height=10,wrap=tk.WORD
 )
-status_box.grid(column=1,row=2)
+status_box.pack(pady=50)
 
 # Plot switcher button
 
