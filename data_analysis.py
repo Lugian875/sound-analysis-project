@@ -19,6 +19,13 @@ def analyze_audio(audio_path):
         "high": np.random.normal(1.0, 0.1, 8)
     }
 
+    # Calculate differences from target RT60 of 0.5 seconds
+    target_rt60 = 0.5
+    rt60_differences = {
+        freq: [value - target_rt60 for value in values]
+        for freq, values in rt60_values.items()
+    }
+    
     # Plots the waveform
     plt.figure(figsize=(10, 4))
     librosa.display.waveshow(audio_data, sr=sample_rate)
@@ -64,6 +71,7 @@ def analyze_audio(audio_path):
         "duration": duration,
         "amplitude": amplitude,
         "rt60": rt60_values,
+        "rt60_differences": rt60_differences,
         "waveform_fig": waveform_fig,
         "rt60_figures": rt60_figures,
         "overlap_rt60_fig": overlap_rt60_fig,
