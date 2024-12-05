@@ -1,11 +1,11 @@
-# import tkinter as tk
 from tkinter import filedialog, messagebox
 import librosa
 import soundfile as sf
 from pydub import AudioSegment
 
-audio_path = ""
+audio_path = "" # global variable for storing audio path
 
+# Callbacks are used to pass the update status to the status_box
 
 def load_audio(callback):
     # Asks user for audio file
@@ -24,11 +24,15 @@ def load_audio(callback):
             callback(f"File converted from .mp3, to .wav\n Saved at {converted_path}" )
         else:
             callback(f"File duplicated for the program\nSaved at {converted_path}" )
+
         audio_path = converted_path
         return audio_path
-    except Exception as e:
-        callback("Error", f"Audio processing failed: {e}")
 
+    # Exception Handler
+    except Exception as e:
+        callback("Error", f"Audio conversion failed: {e}")
+
+# Messing with the audio in a whole separate function
 def audio_tinkering(callback):
     # This first bit prevents big boy error
     if audio_path == "":
@@ -49,6 +53,7 @@ def audio_tinkering(callback):
             audio_data, sample_rate = librosa.load(audio_path, sr=None, mono=True)
             sf.write(audio_path, audio_data, sample_rate)
             callback("Converted to single-channel audio")
+
         # Handles all exceptions
         except Exception as e:
              callback("Error", f"Audio processing failed: {e}")
