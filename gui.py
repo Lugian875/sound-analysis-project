@@ -1,6 +1,11 @@
 import tkinter as tk
+from tkinter import scrolledtext
+import threading
+import time
 
 import audio_handler as ah
+
+audio_path = ""
 
 root = tk.Tk()
 
@@ -19,11 +24,20 @@ grid.grid(column=0,row=7,sticky='NESW',columnspan=2)
 root.rowconfigure(7,weight=1)
 root.columnconfigure(7,weight=1)
 
-def load_audio():
-    load_audio_btn["state"] = 'disabled'
-    ah.load_audio()
-    load_audio_btn["state"] = 'normal'
+# For updating the status box with new status messages
+def update_status(message):
+    status_box.insert(tk.END,message + "\n")
+    status_box.see(tk.END)
 
+# Function chain for loading audio
+def load_audio():
+    global audio_path
+    load_audio_btn["state"] = 'disabled'
+    status_box.delete(1.0,tk.END)
+    audio_path = ah.load_audio(update_status)
+    ah.audio_tinkering(update_status)
+    load_audio_btn["state"] = 'normal'
+    print(audio_path)
 
 # Widgets
 # Title Label (centered at top)
@@ -35,23 +49,19 @@ title.grid(column=1, row=0, sticky='N')
 load_audio_btn = tk.Button(
     root, text="Load Audio", font='Arial 12', fg='black',command=lambda:[load_audio()]
 )
-load_audio_btn.grid(column=1,row=1,sticky='N')
+load_audio_btn.grid(column=1,row=0, pady=80, sticky='N')
 
 # Audio Analysis Button
 audio_analysis_btn = tk.Button(
     root, text="Analyze Audio", font='Arial 12',fg='black', state="disabled"
 )
-audio_analysis_btn.grid(column=1,row=2,pady=60, sticky='N')
+audio_analysis_btn.grid(column=1,row=0,pady=130, sticky='N')
 
-#Text Box
-status_box = tk.Text(
-    root, fg='black',font='Arial 10',wrap='word',height=5,width=32
+#Text Box that displays status
+status_box = scrolledtext.ScrolledText (
+    root,font='Arial 10',width=50,height=10,wrap=tk.WORD
 )
-status_box.grid(column=1,row=3,sticky='N')
-Test_String = "Test String"
-status_box.insert(tk.END,Test_String)
-status_box.config(state='disabled')
-
+status_box.grid(column=1,row=2)
 
 # Plot switcher button
 
