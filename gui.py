@@ -1,5 +1,4 @@
 import tkinter as tk
-from pickle import FALSE
 
 from audio_handler import load_audio, audio_tinkering
 from data_analysis import analyze_audio
