@@ -3,20 +3,16 @@ from tkinter import filedialog, messagebox
 import librosa
 import soundfile as sf
 from pydub import AudioSegment
-import gui
-
 
 # Issac wrote the code, despite what the commits says
 
 def load_audio():
     # print("Audio Loader triggered")
-    gui.load_audio_btn["state"] = "disabled"
     # Asks user for audio file
     audio_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
     if not audio_path:
         # If this is triggered, the "Load Audio" button should return
         messagebox.showwarning("No File Selected", "Please choose an audio file.")
-        gui.load_audio_btn["state"] = "normal"
         return
 
     try:
@@ -46,9 +42,6 @@ def load_audio():
         audio_data, sample_rate = librosa.load(audio_path, sr=None, mono=True)
         sf.write(audio_path, audio_data, sample_rate)
         messagebox.showinfo("Processing Complete", f"Mono file saved")
-
-        gui.load_audio_btn["state"] = "normal"
     # Handles all exceptions
     except Exception as e:
          messagebox.showerror("Error", f"Audio processing failed: {e}")
-         gui.load_audio_btn.grid()
