@@ -1,15 +1,13 @@
 import tkinter as tk
 from tkinter import scrolledtext
-import threading
-import time
 
 import audio_handler as ah
 
-audio_path = ""
+audio_path = "" #saves path for audio file used in project for future use
 
 root = tk.Tk()
 
-#Title, Default Window Size, and it is r
+#Title, Default Window Size
 root.title('SPIDAM Project')
 root.geometry('1280x720+300+300')
 root.resizable(True,True)
@@ -32,9 +30,9 @@ def update_status(message):
 # Function chain for loading audio
 def load_audio():
     global audio_path
-    load_audio_btn["state"] = 'disabled'
-    status_box.delete(1.0,tk.END)
-    audio_path = ah.load_audio(update_status)
+    load_audio_btn["state"] = 'disabled' #Disables audio button
+    status_box.delete(1.0,tk.END) #Clears status box
+    audio_path = ah.load_audio(update_status) #Runs audio loader,
     ah.audio_tinkering(update_status)
     load_audio_btn["state"] = 'normal'
     print(audio_path)
