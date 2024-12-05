@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import scrolledtext
 
 from audio_handler import load_audio, audio_tinkering
 from data_analysis import analyze_audio
@@ -12,31 +11,49 @@ root.title('SPIDAM Project')
 root.geometry('1280x720+300+300')
 root.resizable(True,True)
 
+# Global Variables
+audio_path = "" # Saves path for audio file used in project for future use
+results = "" # Saves results for future use
+
 # Functions
-audio_path = "" #Saves path for audio file used in project for future use
 
-#For updating the status box with new status messages
+# For updating the status box with new status messages
 def update_status(message):
+    status_box['state'] = 'normal'
     status_box.insert(tk.END,message + "\n")
-    status_box.see(tk.END)
+    status_box['state'] = 'disabled'
 
-# Function chain for loading and tinkering an audio file
+# For clearing the status box
+def clear_status():
+    status_box['state'] = 'normal'
+    status_box.delete(1.0,tk.END) # Clears status box
+    status_box['state'] = 'disabled'
+
+# For loading and tinkering an audio file
 def audio_handler():
     global audio_path
-    audio_load_btn["state"] = 'disabled' #Disables audio button
-    status_box.delete(1.0,tk.END) #Clears status box
-    audio_path = load_audio(update_status) #Runs audio loader,
-    audio_tinkering(update_status)
-    audio_load_btn["state"] = 'normal'
-    audio_analysis_btn["state"] = 'normal'
+    audio_load_btn["state"] = 'disabled' # Disables load audio button
+    status_box['state'] = 'normal'
+    clear_status()
+    audio_path = load_audio(update_status) # Runs audio loader
+    audio_tinkering(update_status) # Runs audio tinkerer
+    audio_load_btn["state"] = 'normal' # Enables load audio button again
+    audio_analysis_btn["state"] = 'normal' # Enables the audio analysis button
     print(audio_path)
 
+# For analyzing audio
 def audio_analysis():
     global audio_path
+    global results
     audio_analysis_btn["state"] = 'disabled' # Disables analysis button
-    status_box.delete(1.0, tk.END)  # Clears status box
-    results = analyze_audio(audio_path)
-    generate_report(results,update_status)
+    clear_status()
+    results = analyze_audio(audio_path) # Calculates results
+    generate_report(results,update_status) # Prints results
+    plot_switcher_btn["state"] = 'normal' # Enables the plot switcher button
+
+
+def plot_switcher():
+    pass
 
 
 # GUI Layout
@@ -60,14 +77,20 @@ audio_load_btn.pack(side=tk.LEFT,padx=10)
 audio_analysis_btn = tk.Button(
     button_frame, text="Analyze Audio", font='Arial 12',fg='black', state="disabled", command=lambda:[audio_analysis()]
 )
-audio_analysis_btn.pack(side=tk.LEFT,padx=10)
+audio_analysis_btn.pack(side=tk.LEFT, padx=10)
 
-#Text Box that displays status
-status_box = scrolledtext.ScrolledText (
-    root,font='Arial 10',width=50,height=10,wrap=tk.WORD
+# Plot Switcher Button(s)
+plot_switcher_btn = tk.Button(
+    button_frame, text= "Next Plot", font='Arial 12', fg='black', state='disabled', command=lambda:[plot_switcher()]
+)
+plot_switcher_btn.pack(padx=10)
+
+#Status Box
+status_box = tk.Text (
+    root,font='Arial 10',width=100,height=10,wrap=tk.WORD, state='disabled'
 )
 status_box.pack(pady=50)
 
-# Plot switcher button
+# Canvas for graph drawing?
 
 root.mainloop() # Do not remove this line, as it is necessary for the window to pop up
