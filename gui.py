@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import scrolledtext
 
-import audio_handler as ah
+from audio_handler import load_audio, audio_tinkering
+from data_analysis import analyze_audio
+from reporting import generate_report
 
-audio_path = "" #saves path for audio file used in project for future use
-
-root = tk.Tk()
+root = tk.Tk() #Initializes something tkinter related
 
 #Title, Default Window Size
 root.title('SPIDAM Project')
@@ -22,36 +22,50 @@ grid.grid(column=0,row=7,sticky='NESW',columnspan=2)
 root.rowconfigure(7,weight=1)
 root.columnconfigure(7,weight=1)
 
-# For updating the status box with new status messages
+
+# Functions
+audio_path = "" #Saves path for audio file used in project for future use
+
+#For updating the status box with new status messages
 def update_status(message):
     status_box.insert(tk.END,message + "\n")
     status_box.see(tk.END)
 
-# Function chain for loading audio
-def load_audio():
+# Function chain for loading and tinkering an audio file
+def audio_handler():
     global audio_path
-    load_audio_btn["state"] = 'disabled' #Disables audio button
+    audio_load_btn["state"] = 'disabled' #Disables audio button
     status_box.delete(1.0,tk.END) #Clears status box
-    audio_path = ah.load_audio(update_status) #Runs audio loader,
-    ah.audio_tinkering(update_status)
-    load_audio_btn["state"] = 'normal'
+    audio_path = load_audio(update_status) #Runs audio loader,
+    audio_tinkering(update_status)
+    audio_load_btn["state"] = 'normal'
+    audio_analysis_btn["state"] = 'normal'
     print(audio_path)
 
+def audio_analysis():
+    global audio_path
+    audio_analysis_btn["state"] = 'disabled' # Disables analysis button
+    status_box.delete(1.0, tk.END)  # Clears status box
+    results = analyze_audio(audio_path)
+    generate_report(results,update_status)
+
+
 # Widgets
+
 # Title Label (centered at top)
 title = tk.Label(
     root, text='Python Interactive Data Modeling Project', font='Arial 32 bold', fg='black')
 title.grid(column=1, row=0, sticky='N')
 
 # Load Audio Button
-load_audio_btn = tk.Button(
-    root, text="Load Audio", font='Arial 12', fg='black',command=lambda:[load_audio()]
+audio_load_btn = tk.Button(
+    root, text="Load Audio", font='Arial 12', fg='black',command=lambda:[audio_handler()]
 )
-load_audio_btn.grid(column=1,row=0, pady=80, sticky='N')
+audio_load_btn.grid(column=1,row=0, pady=80, sticky='N')
 
 # Audio Analysis Button
 audio_analysis_btn = tk.Button(
-    root, text="Analyze Audio", font='Arial 12',fg='black', state="disabled"
+    root, text="Analyze Audio", font='Arial 12',fg='black', state="disabled", command=lambda:[audio_analysis()]
 )
 audio_analysis_btn.grid(column=1,row=0,pady=130, sticky='N')
 
