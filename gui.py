@@ -9,13 +9,13 @@ root = tk.Tk() #Initializes something tkinter related
 
 #Title, Default Window Size
 root.title('SPIDAM Project')
-root.geometry('1000x1000+500+0')
+root.geometry('1000x1000+0+0') # return to 500 later
 root.resizable(True,True)
 
 # Global Variables
 audio_path = None # Saves path for audio file used in project for future use
 results = {} # Saves results for future use
-plot_num = 0 # Iterating through plots?
+prev_RT60_graph = 0 # Specifically for RT60 graph cycling
 
 # Functions
 
@@ -50,25 +50,29 @@ def audio_analysis():
     clear_status()
     results = analyze_audio(audio_path) # Calculates results
     generate_report(results,update_status) # Prints results
-    plot_switcher_next_btn["state"] = 'normal' # Enables the plot switcher buttons
-    plot_switcher_prev_btn["state"] = 'normal'
+    plot_switcher_wvfm_btn["state"] = 'normal'
+    plot_switcher_RT60_btn["state"] = 'normal'
+    plot_switcher_comRT60_btn["state"] = 'normal'
+    plot_switcher_amp_btn["state"] = 'normal'
 
 # For switching plots
-def plot_switcher(direction):
+def plot_switcher(plot_num):
     global results
-    global plot_num
+    global prev_RT60_graph
 
-    # Iterating the plot number
-    if direction:
-        plot_num = plot_num + 1
-    else:
-        plot_num = plot_num - 1
-
-    # For keeping the plot number between the ranges of 1-6
-    if plot_num > 6:
-        plot_num = 1
-    if plot_num < 1:
-        plot_num = 6
+    # For RT60 graph cycling
+    match prev_RT60_graph,plot_num:
+        case 0,2:
+            prev_RT60_graph = 2
+        case 2,2:
+            prev_RT60_graph = 3
+            plot_num = 3
+        case 3,2:
+            prev_RT60_graph = 4
+            plot_num = 4
+        case 4,2:
+            prev_RT60_graph = 2
+            plot_num = 2
 
     # For destroying the current plot
     for widget in graph_frame.winfo_children():
@@ -94,9 +98,9 @@ title = tk.Label(
 title.pack(side=tk.TOP, pady=10)
 
 # Frames to store the buttons
-button_frame = tk.Frame(root)
+button_frame = tk.Frame(root) # Load, Analyze, and Delete Audio
 button_frame.pack(pady=10)
-button_frame_2 = tk.Frame(root)
+button_frame_2 = tk.Frame(root) # Plot Switchers
 button_frame_2.pack(pady=10)
 
 # Load Audio Button
@@ -113,16 +117,32 @@ audio_analysis_btn.pack(side=tk.LEFT, padx=10)
 
 # Delete Audio Button?
 
-# Plot Switcher Buttons
-plot_switcher_prev_btn = tk.Button(
-    button_frame_2, text= "Prev Plot", font='Arial 12', fg='black', state='disabled', command=lambda:[plot_switcher(False)]
-)
-plot_switcher_prev_btn.pack(side= tk.LEFT, padx=10)
 
-plot_switcher_next_btn = tk.Button(
-    button_frame_2, text= "Next Plot", font='Arial 12', fg='black', state='disabled', command=lambda:[plot_switcher(True)]
+# Plot Switcher Buttons
+
+## Waveform Plot
+plot_switcher_wvfm_btn = tk.Button(
+    button_frame_2, text= "Waveform", font='Arial 12', fg='black', state='disabled', command=lambda:[plot_switcher(1)]
 )
-plot_switcher_next_btn.pack(padx=10)
+plot_switcher_wvfm_btn.pack(side= tk.LEFT, padx=10)
+
+## Cycle between RT60 Plots
+plot_switcher_RT60_btn = tk.Button(
+    button_frame_2, text= "RT60 Plots", font='Arial 12', fg='black', state='disabled', command=lambda:[plot_switcher(2)]
+)
+plot_switcher_RT60_btn.pack(side= tk.LEFT, padx=10)
+
+## Combined RT60 Plot
+plot_switcher_comRT60_btn = tk.Button(
+    button_frame_2, text= "Combined RT60 (slow)", font='Arial 12', fg='black', state='disabled', command=lambda:[plot_switcher(5)]
+)
+plot_switcher_comRT60_btn.pack(side= tk.LEFT, padx=10)
+
+## Amplitude Histogram Plot
+plot_switcher_amp_btn = tk.Button(
+    button_frame_2, text= "Amplitude Histogram", font='Arial 12', fg='black', state='disabled', command=lambda:[plot_switcher(6)]
+)
+plot_switcher_amp_btn.pack(side= tk.LEFT, padx=10)
 
 #Status Box
 status_box = tk.Text (
