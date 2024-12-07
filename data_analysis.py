@@ -21,7 +21,7 @@ def bandpass_filter(data, lowcut, highcut, fs, order=4):
 def rt60_calculation_and_points(data_in_db,t):
     # Finds index of maximum dB value
     index_of_max = np.argmax(data_in_db)
-    value_of_max = data_in_db
+    value_of_max = data_in_db[index_of_max]
 
     # Slices array from maximum value
     sliced_array = data_in_db[index_of_max:]
@@ -43,15 +43,16 @@ def rt60_calculation_and_points(data_in_db,t):
     index_of_max_less_25 = np.where(data_in_db == value_of_max_less_25)[0][0]
 
     # Points on the RT60 plot for graphing
-    max_pt = t[index_of_max], data_in_db[index_of_max], 'go'
-    max_less_5pt = t[index_of_max_less_5], data_in_db[index_of_max_less_5], 'yo'
-    max_less_25pt = t[index_of_max_less_25], data_in_db[index_of_max_less_25], 'ro'
+    max_pt = t[index_of_max], data_in_db[index_of_max], 'green'
+    max_less_5pt = t[index_of_max_less_5], data_in_db[index_of_max_less_5], 'yellow'
+    max_less_25pt = t[index_of_max_less_25], data_in_db[index_of_max_less_25], 'red'
 
     rt60 = 3 * (t[index_of_max_less_5] - t[index_of_max_less_25])
 
     return max_pt, max_less_5pt, max_less_25pt, rt60
 
 
+# The main code block  (really gross)
 def analyze_audio(audio_path):
     # Loads the audio
     audio_data, sample_rate = librosa.load(audio_path, sr=None)
@@ -82,37 +83,43 @@ def analyze_audio(audio_path):
 
     # Finds target frequencies
     target_frequencies = {
-        "low" : find_target_frequency(freqs, 100),
-        "mid" : find_target_frequency(freqs, 1000),
-        "high" : find_target_frequency(freqs, 10000)
+        "Low" : find_target_frequency(freqs, 100),
+        "Mid" : find_target_frequency(freqs, 1000),
+        "High" : find_target_frequency(freqs, 10000)
     }
 
     # Band-pass filter over the target frequencies
     filtered_data = { }
-    for x,y in target_frequencies.items():
+    for x,tf in target_frequencies.items():
         filtered_data[x] = bandpass_filter(
-            audio_data, y - 50, y + 50, sample_rate)
+            audio_data, tf - 50, tf + 50, sample_rate)
 
     # Converts the filtered audio signal to decibel scale
     data_in_db = { }
-    for x,y in filtered_data.items():
-        data_in_db[x] = 10 * np.log10(np.abs(y) + 1e-10)
+    for x,fd in filtered_data.items():
+        data_in_db[x] = 10 * np.log10(np.abs(fd) + 1e-10)
 
+    # For calculating RT60 time and points for RT60 plots
+    rt60_values_and_points = { } # Nested dictionary contains the necessary data
+    for freq_label,val in data_in_db.items():
+        max_pt, max_less_5pt, max_less_25pt, rt60 = rt60_calculation_and_points(val,t)
 
-    # rt60_values = {
-    #     "low": np.random.normal(0.6, 0.1, 8),
-    #     "mid": np.random.normal(0.8, 0.1, 8),
-    #     "high": np.random.normal(1.0, 0.1, 8)
-    # }
+        # Dictionary for each frequency (low, mid, high) that stores graph points and RT60 time
+        freq_data= {
+            "maxdB" : max_pt,
+            "max-5dB" : max_less_5pt,
+            "max-25dB" : max_less_25pt,
+            "RT60 Value" : np.round(np.abs(rt60),2)
+        }
+        rt60_values_and_points[freq_label] = freq_data
 
-    # Calculate differences from target RT60 of 0.5 seconds
-    # target_rt60 = 0.5
-    # rt60_differences = {
-    #     freq: [value - target_rt60 for value in values]
-    #     for freq, values in rt60_values.items()
-    # }
+    # Difference in RT60 Value to reduce to .5 seconds
+    # rt60_difference = ((rt60_values_and_points["Low"]["RT60 Value"] +
+    #                    rt60_values_and_points["Mid"]["RT60 Value"] +
+    #                    rt60_values_and_points["High"]["RT60 Value"])
+    #                     / 3 ) - .5
     
-    # Plots the waveform
+    # Waveform Plot
     plt.figure(2)
     librosa.display.waveshow(audio_data, sr=sample_rate)
     plt.title("Waveform")
@@ -121,32 +128,55 @@ def analyze_audio(audio_path):
     waveform_fig = plt.gcf()
     plt.close()
 
-    # Plots the RT60 scatter plots for each frequency range.
+    # RT60 Plot (also very complex)
     rt60_figures = []
+    for freq_label, data in rt60_values_and_points.items():
+        x_coords = [] # x-coordinate data
+        y_coords = [] # y-coordinate data
+        colors = []  #color data
 
-    # for freq, rt60_data in rt60_values.items():
-    #     plt.figure(figsize=(8, 6))
-    #     plt.scatter(range(len(rt60_data)), rt60_data, label=f"RT60 - {freq}")
-    #     plt.plot(range(len(rt60_data)), rt60_data, color='black', linestyle='-', alpha=0.5)
-    #     plt.title(f"RT60 Values for {freq} Frequency Range")
-    #     plt.xlabel("Data Points")
-    #     plt.ylabel("RT60 (seconds)")
-    #     rt60_figures.append(plt.gcf())
-    #     plt.close()
+        # For making sure that the right data is being read
+        def has_enough_data(point_data):
+            # Check if point_data is a tuple with exactly 3 elements (x, y, color) and not RT60 value
+            if isinstance(point_data, tuple) and len(point_data) == 3:
+                return True
+            else:
+                return False
 
-    # Create the overlapping RT60 scatter plot thats needed
-    plt.figure(figsize=(8, 6))
-    # for freq, rt60_data in rt60_values.items():
-    #     plt.scatter(range(len(rt60_data)), rt60_data, label=f"{freq} RT60")
-    #     plt.plot(range(len(rt60_data)), rt60_data, linestyle='-', alpha=0.5)
-    plt.title("Overlapping RT60 Values for All Frequencies")
+        for data_point, point_data in data.items():
+            if not has_enough_data(point_data):
+                continue
+
+            # Extracts data
+            x,y,color = point_data
+            x_coords.append(x)
+            y_coords.append(y)
+            colors.append(color)
+
+        plt.figure(2)
+        # Plots the filtered signal in decibel scale
+        plt.plot(t,data_in_db[freq_label],linewidth=1,alpha=0.7)
+
+
+        plt.scatter(x_coords, y_coords, c=colors, marker = 'o')
+
+        plt.title(f'RT60 Plot for {freq_label} frequencies')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Power (db)')
+        plt.grid()
+        rt60_figures.append(plt.gcf())
+        plt.close()
+
+    #Combined RT60 Plot
+    plt.figure(2)
+    plt.title("Combined RT60 Value Graph")
     plt.xlabel("Data Points")
     plt.ylabel("RT60 (seconds)")
     overlap_rt60_fig = plt.gcf()
     plt.close()
 
-    # Generate a Histogram of Amplitudes because we are required to have at least 6 graphs and we needed one more (was easy to do)
-    plt.figure(figsize=(8, 6))
+    #Extra Graph: Amplitude Histogram
+    plt.figure(2)
     plt.hist(audio_data, bins=50, color='c', alpha=0.75)
     plt.title("Histogram of Amplitudes")
     plt.xlabel("Amplitude")
@@ -157,8 +187,8 @@ def analyze_audio(audio_path):
     return {
         "duration": duration,
         "resonance frequency": resonance_freq,
-        # "rt60": rt60_values,
-        # "rt60_differences": rt60_differences,
+        "rt60": rt60_values_and_points,
+        # "rt60_difference": rt60_difference,
         "waveform_fig": waveform_fig,
         "rt60_figures": rt60_figures,
         "overlap_rt60_fig": overlap_rt60_fig,
