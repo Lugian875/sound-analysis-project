@@ -31,7 +31,7 @@ def clear_status():
     status_box.delete(1.0,tk.END) # Clears status box
     status_box['state'] = 'disabled'
 
-# For loading and tinkering an audio file
+# For loading and cleaning an audio file
 def audio_handler():
     global audio_path
     audio_load_btn["state"] = 'disabled' # Disables load audio button
@@ -50,11 +50,6 @@ def audio_analysis():
     clear_status()
     results = analyze_audio(audio_path) # Calculates results
     generate_report(results,update_status) # Prints results
-    rt60_diff = results["rt60_differences"]  # Retrieve RT60 differences
-    update_status("\nRT60 Differences (Target = 0.5s):")
-    update_status(f"Low Frequency: {rt60_diff['low']}")
-    update_status(f"Mid Frequency: {rt60_diff['mid']}")
-    update_status(f"High Frequency: {rt60_diff['high']}\n")
     plot_switcher_next_btn["state"] = 'normal' # Enables the plot switcher buttons
     plot_switcher_prev_btn["state"] = 'normal'
 
@@ -84,7 +79,7 @@ def plot_switcher(direction):
         case 1:
             display_waveform(graph_frame,results["waveform_fig"])
         case 2 | 3 | 4:
-            display_rt60_graphs(graph_frame, results["rt60_figures"],plot_num)
+            display_rt60_graphs(graph_frame,results["rt60_figures"],plot_num)
         case 5:
             display_overlap_rt60_graph(graph_frame,results["overlap_rt60_fig"])
         case 6:
