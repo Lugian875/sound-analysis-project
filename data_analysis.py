@@ -114,10 +114,10 @@ def analyze_audio(audio_path):
         rt60_values_and_points[freq_label] = freq_data
 
     # Difference in RT60 Value to reduce to .5 seconds
-    # rt60_difference = ((rt60_values_and_points["Low"]["RT60 Value"] +
-    #                    rt60_values_and_points["Mid"]["RT60 Value"] +
-    #                    rt60_values_and_points["High"]["RT60 Value"])
-    #                     / 3 ) - .5
+    rt60_difference = ((rt60_values_and_points["Low"]["RT60 Value"] +
+                       rt60_values_and_points["Mid"]["RT60 Value"] +
+                       rt60_values_and_points["High"]["RT60 Value"])
+                        / 3 ) - .5
     
     # Waveform Plot
     plt.figure(2)
@@ -157,8 +157,7 @@ def analyze_audio(audio_path):
         # Plots the filtered signal in decibel scale
         plt.plot(t,data_in_db[freq_label],linewidth=1,alpha=0.7)
 
-
-        plt.scatter(x_coords, y_coords, c=colors, marker = 'o')
+        plt.scatter(x_coords, y_coords, c=colors, marker = 'o') #Plots data
 
         plt.title(f'RT60 Plot for {freq_label} frequencies')
         plt.xlabel('Time (s)')
@@ -169,9 +168,12 @@ def analyze_audio(audio_path):
 
     #Combined RT60 Plot
     plt.figure(2)
+    for freq_label, data in data_in_db.items():
+        plt.plot(t, data_in_db[freq_label], linewidth=1, alpha=0.7, label=freq_label)
     plt.title("Combined RT60 Value Graph")
     plt.xlabel("Data Points")
     plt.ylabel("RT60 (seconds)")
+    plt.legend()
     overlap_rt60_fig = plt.gcf()
     plt.close()
 
@@ -188,7 +190,7 @@ def analyze_audio(audio_path):
         "duration": duration,
         "resonance frequency": resonance_freq,
         "rt60": rt60_values_and_points,
-        # "rt60_difference": rt60_difference,
+        "rt60_difference": rt60_difference,
         "waveform_fig": waveform_fig,
         "rt60_figures": rt60_figures,
         "overlap_rt60_fig": overlap_rt60_fig,
