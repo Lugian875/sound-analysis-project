@@ -2,15 +2,19 @@ import librosa
 import librosa.display
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import welch
 
 # this is voodoo magic
 def analyze_audio(audio_path):
     # Loads the audio
     audio_data, sample_rate = librosa.load(audio_path, sr=None)
 
-    # Computes the basic stats needed the analyze
+    # Finds duration
     duration = librosa.get_duration(y=audio_data, sr=sample_rate)
-    amplitude = np.max(audio_data)
+
+    # Finds resonant frequency
+    frequencies, power = welch(audio_data,sample_rate,nperseg=4096)
+    resonance_freq = frequencies[np.argmax(power)]
 
     # Compute all of the RT60 values (i just have placeholder values here atm)
     rt60_values = {
@@ -69,7 +73,7 @@ def analyze_audio(audio_path):
 
     return {
         "duration": duration,
-        "amplitude": amplitude,
+        "resonance frequency": resonance_freq,
         "rt60": rt60_values,
         "rt60_differences": rt60_differences,
         "waveform_fig": waveform_fig,
