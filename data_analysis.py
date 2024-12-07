@@ -120,7 +120,7 @@ def analyze_audio(audio_path):
                         / 3 ) - .5
     
     # Waveform Plot
-    plt.figure(2)
+    plt.figure(figsize=(10,5))
     librosa.display.waveshow(audio_data, sr=sample_rate)
     plt.title("Waveform")
     plt.xlabel("Time (s)")
@@ -153,7 +153,7 @@ def analyze_audio(audio_path):
             y_coords.append(y)
             colors.append(color)
 
-        plt.figure(2)
+        plt.figure(figsize=(10,5))
         # Plots the filtered signal in decibel scale
         plt.plot(t,data_in_db[freq_label],linewidth=1,alpha=0.7)
 
@@ -167,7 +167,7 @@ def analyze_audio(audio_path):
         plt.close()
 
     #Combined RT60 Plot
-    plt.figure(2)
+    plt.figure(figsize=(10,5))
     for freq_label, data in data_in_db.items():
         plt.plot(t, data_in_db[freq_label], linewidth=1, alpha=0.7, label=freq_label)
     plt.title("Combined RT60 Value Graph")
@@ -178,7 +178,7 @@ def analyze_audio(audio_path):
     plt.close()
 
     #Extra Graph: Amplitude Histogram
-    plt.figure(2)
+    plt.figure(figsize=(10,5))
     plt.hist(audio_data, bins=50, color='c', alpha=0.75)
     plt.title("Histogram of Amplitudes")
     plt.xlabel("Amplitude")
