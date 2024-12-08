@@ -1,4 +1,4 @@
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 import librosa
 import soundfile as sf
 from pydub import AudioSegment
@@ -17,14 +17,14 @@ def load_audio(callback):
 
     try:
         # Convert the file type to ".wav" if necessary
-        sound = AudioSegment.from_file(audio_path)
         converted_path = audio_path.rsplit('.', 1)[0] + "_converted.wav"
-        sound.export(converted_path, format='wav')
         if not audio_path.endswith(".wav"):
+            sound = AudioSegment.from_mp3(audio_path)
             callback(f"File converted from .mp3, to .wav\n Saved at {converted_path}" )
         else:
+            sound = AudioSegment.from_file(audio_path)
             callback(f"File duplicated for the program\nSaved at {converted_path}" )
-
+        sound.export(converted_path, format='wav')
         audio_path = converted_path
         return audio_path
 
