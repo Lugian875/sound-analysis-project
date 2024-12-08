@@ -15,13 +15,13 @@ def bandpass_filter(data, lowcut, highcut, fs, order=4):
     low = lowcut / nyquist
     high = highcut / nyquist
     b, a = butter(order, [low, high], btype='band')
-    return filtfilt(b, a, data)
+    return filtfilt(b, a, ~np.isnan(data))
 
 # For calculating RT60 time and finding points for the graph (it's complicated)
 def rt60_calculation_and_points(data_in_db,t):
     # Finds index of maximum dB value
     index_of_max = np.argmax(data_in_db)
-    value_of_max = data_in_db[index_of_max]
+    value_of_max = data_in_db[index_of_max:]
 
     # Slices array from maximum value
     sliced_array = data_in_db[index_of_max:]
@@ -68,8 +68,8 @@ def analyze_audio(audio_path):
     resonance_freq = frequencies[np.argmax(power)]
 
     # For calculating RT60 Values
-    # low freq: 100 Hz
-    # mid freq: 1000 Hz
+    # low freq: 500 Hz
+    # mid freq: 2000 Hz
     # high freq: 10000 Hz
 
     # Fourier Transform of the signal (idk what that is)
@@ -83,8 +83,8 @@ def analyze_audio(audio_path):
 
     # Finds target frequencies
     target_frequencies = {
-        "Low" : find_target_frequency(freqs, 100),
-        "Mid" : find_target_frequency(freqs, 1000),
+        "Low" : find_target_frequency(freqs, 500),
+        "Mid" : find_target_frequency(freqs, 2000),
         "High" : find_target_frequency(freqs, 10000)
     }
 
@@ -96,6 +96,9 @@ def analyze_audio(audio_path):
 
     # Converts the filtered audio signal to decibel scale
     data_in_db = { }
+    # for x in audio_data:
+    #     data_in_db[x] = 10 * np.log10(np.abs(audio_data) + 1e-10)
+
     for x,fd in filtered_data.items():
         data_in_db[x] = 10 * np.log10(np.abs(fd) + 1e-10)
 
