@@ -19,6 +19,8 @@ The SPIDAM project aims to combat excess reverberation in enclosed spaces to inc
 **Usage**
   Launch the application with the following command: <br>
     `python3 gui.py`
-  Use the GUI to:
-- Load audio files (only mp3 and wav)
+<br>
+Use the GUI to:<br>
+
+- Load audio files (only mp3 and wav)<br>
 - Analyze and visualize RT60 data.
