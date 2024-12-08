@@ -21,7 +21,7 @@ def bandpass_filter(data, lowcut, highcut, fs, order=4):
 def rt60_calculation_and_points(data_in_db,t):
     # Finds index of maximum dB value
     index_of_max = np.argmax(data_in_db)
-    value_of_max = data_in_db[index_of_max:]
+    value_of_max = data_in_db[index_of_max]
 
     # Slices array from maximum value
     sliced_array = data_in_db[index_of_max:]
@@ -47,7 +47,7 @@ def rt60_calculation_and_points(data_in_db,t):
     max_less_5pt = t[index_of_max_less_5], data_in_db[index_of_max_less_5], 'yellow'
     max_less_25pt = t[index_of_max_less_25], data_in_db[index_of_max_less_25], 'red'
 
-    rt60 = 3 * (t[index_of_max_less_5] - t[index_of_max_less_25])
+    rt60 = abs( 3 * (t[index_of_max_less_5] - t[index_of_max_less_25]))
 
     return max_pt, max_less_5pt, max_less_25pt, rt60
 
@@ -68,9 +68,9 @@ def analyze_audio(audio_path):
     resonance_freq = frequencies[np.argmax(power)]
 
     # For calculating RT60 Values
-    # low freq: 500 Hz
-    # mid freq: 2000 Hz
-    # high freq: 10000 Hz
+    # low freq: 1 kHz
+    # mid freq: 5 kHz
+    # high freq: 10 kHz
 
     # Fourier Transform of the signal (idk what that is)
     fft_result = np.fft.fft(audio_data)
@@ -83,8 +83,8 @@ def analyze_audio(audio_path):
 
     # Finds target frequencies
     target_frequencies = {
-        "Low" : find_target_frequency(freqs, 500),
-        "Mid" : find_target_frequency(freqs, 2000),
+        "Low" : find_target_frequency(freqs, 1000),
+        "Mid" : find_target_frequency(freqs, 5000),
         "High" : find_target_frequency(freqs, 10000)
     }
 
